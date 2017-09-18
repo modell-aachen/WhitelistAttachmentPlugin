@@ -1,0 +1,5 @@
+data/System/WhitelistAttachmentPlugin.txt 0644
+lib/Foswiki/Configure/Checkers/Plugins/WhitelistAttachmentPlugin/MagicFile.pm 0644
+lib/Foswiki/Plugins/WhitelistAttachmentPlugin.pm 0644
+lib/Foswiki/Plugins/WhitelistAttachmentPlugin/Config.spec 0644
+lib/Foswiki/Plugins/WhitelistAttachmentPlugin/Meta.pm 0644

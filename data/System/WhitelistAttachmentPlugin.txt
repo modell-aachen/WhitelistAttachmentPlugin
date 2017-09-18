@@ -1,0 +1,22 @@
+%META:TOPICPARENT{name="Plugins"}%
+---+ !WhitelistAttachmentPlugin
+
+%SHORTDESCRIPTION%
+
+%TOC%
+
+---++ Installation Instructions
+%$INSTALL_INSTRUCTIONS%
+
+---++ Configuration
+
+---++ Info
+
+|  Author(s): | Foswiki:Main.SvenMeyer |
+|  Copyright: | &copy; 2017, Modell Aachen !GmbH |
+|  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
+|  Release: | %$RELEASE% |
+|  Version: | %$VERSION% |
+|  Dependencies: | %$DEPENDENCIES% |
+|  Home page: | [[http://www.modell-aachen.de][Modell Aachen GmbH]] |
+|  Support: | [[http://www.modell-aachen.de][Modell Aachen GmbH]] |
