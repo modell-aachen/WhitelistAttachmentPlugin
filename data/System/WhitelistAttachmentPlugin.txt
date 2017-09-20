@@ -7,10 +7,11 @@
 
 ---++ Installation Instructions
 %$INSTALL_INSTRUCTIONS%
-
----++ Configuration
-
----++ Info
+---++ General Information
+This Plugin allows to define a whitelist of allowed attachment file extensions.
+The list can be defined in the plugin settings in bin/configure.
+If this plugin is enabled every operation on attachments (upload, rename, move) will be verified based on the defined whitelist.
+If the file extension is not part of the whitelist then the operation will be aborted and an error message is provided. Filenames without extension are always invalid if this plugin is activated.
 
 |  Author(s): | Foswiki:Main.SvenMeyer |
 |  Copyright: | &copy; 2017, Modell Aachen !GmbH |
