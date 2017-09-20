@@ -10,6 +10,7 @@ use Foswiki::OopsException;
 use Foswiki::Plugins;
 use Foswiki::Plugins::WhitelistAttachmentPlugin::Meta;
 
+
 our $RELEASE = '1.0.0';
 our $VERSION = '1.0.0';
 
@@ -18,8 +19,6 @@ our $SHORTDESCRIPTION = <<DESC;
 This plugins allows to whitelist a given set of attachment types which are
 allowed to be uploaded.'
 DESC
-
-my $cfg;
 
 sub earlyInitPlugin {
     return unless $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{Enabled};
@@ -34,123 +33,63 @@ sub initPlugin {
     return 0;
   }
 
-  $cfg = $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin};
-  $cfg->{Severity} ||= 'WARN';
-  $cfg->{MIMETypeAssociation} ||= {};
-
-  if ($cfg->{AdditionalMIMETypeChecking}) {
-    eval {require File::MMagic;};
-    if ($@) {
-      Foswiki::Func::writeWarning("Unable to load 'File::Magic':", $@);
-    }
-  }
-
   return 1;
-}
-
-sub finishPlugin {
-  undef $cfg;
-}
-
-# SMELL: deprecated handler
-sub beforeAttachmentSaveHandler {
-  my ($params, $topic, $web) = @_;
-
-  # TODO: params->{name} wird in Meta::attach nicht übernommen...
-  $_[0]->{name} = _sanitize($web, $topic, $params->{name})
-    unless _validate($params->{name}, $params->{tmpFilename});
 }
 
 sub beforeCopyAttachmentHandler {
   my ($web, $topic, $attachment, $toWeb, $toTopic, $toAttachment) = @_;
-  $_[5] = _sanitize($toWeb, $toTopic, $toAttachment)
-    unless _validateCopyOrRename(@_);
+  if(!_isValidExtension($toAttachment)){
+    _showErrorPage($web, $topic, $toAttachment);
+  }
+  return;
 }
 
 sub beforeRenameAttachmentHandler {
   my ($web, $topic, $attachment, $toWeb, $toTopic, $toAttachment) = @_;
-  $_[5] = _sanitize($toWeb, $toTopic, $toAttachment)
-    unless _validateCopyOrRename(@_);
+  if(!_isValidExtension($toAttachment)){
+    _showErrorPage($web, $topic, $toAttachment);
+  }
+  return;
 }
 
 sub beforeUploadHandler {
   my ($params, $meta) = @_;
-
-  # SMELL: '$params->{tmpFilename}' is only available because we've attached
-  # a beforeAttachmentSaveHandler
-
-  # TODO: params->{name} wird in Meta::attach nicht übernommen...
-  $_[0]->{name} = _sanitize($meta->{_web}, $meta->{_topic}, $params->{name})
-    unless _validate($params->{name}, $params->{tmpFilename});
+  if(!_isValidExtension($params->{name})){
+    _showErrorPage($meta->web(), $meta->topic(), $params->{name});
+  }
+  return;
 }
 
-sub _sanitize {
+sub _showErrorPage {
   my ($web, $topic, $attachment) = @_;
 
-  if ($cfg->{Severity} eq 'WARN') {
-    Foswiki::Func::writeWarning("Whitelist violation: $web.$topic.$attachment");
-    return $attachment;
-  } elsif($cfg->{Severity} eq 'RENAME') {
-    $attachment =~ s/[\.\s]+$//g;
-    return "$attachment." . ($cfg->{DisarmedExtension} || 'txt');
-  } elsif ($cfg->{Severity} eq 'FAIL') {
+    my $session = $Foswiki::Plugins::SESSION;
     throw Foswiki::OopsException(
-      'attention',
-      def => "generic",
+      'generic',
       web => $web,
       topic => $topic,
       keep => 1,
       params => [
-        "Operation not permitted.",
-        "Whitelist checks failed for attachment '$attachment'."
+        $session->i18n->maketext("Attachment operation not permitted"),
+        $session->i18n->maketext("The file extension violates the security settings"),
+        "'$attachment'"
       ]
     );
-  }
 }
 
-sub _validate {
-  my ($filename, $filepath) = @_;
-
-  my $allowed = _validateExtension($filename);
-  return $allowed unless $cfg->{AdditionalMIMETypeChecking} || 0;
-  return $allowed unless -f $cfg->{MagicFile};
-  return _validateMIMEType($filename, $filepath);
-}
-
-sub _validateCopyOrRename {
-  my ($web, $topic, $attachment, $toWeb, $toTopic, $toAttachment) = @_;
-
-  my $path = File::Spec->catfile(
-    $Foswiki::cfg{PubDir},
-    $web,
-    $topic,
-    $attachment
-  );
-
-  return _validate($toAttachment, $path);
-}
-
-sub _validateExtension {
+sub _isValidExtension {
   my $filename = shift;
 
+  my $allowedExtensions = $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{AllowedExtensions};
+  if(!$allowedExtensions) {
+    return 0;
+  }
   my @exts = map {
     $_ =~ s/[\s\r\n\.]//gr
-  } split(/,/, ($cfg->{AllowedExtensions} || ''));
+  } split(/,/, ($allowedExtensions));
 
   my $pattern = '(' . join('|', @exts) . ')$';
   return ($filename =~ /$pattern/) || 0;
-}
-
-sub _validateMIMEType {
-  my ($filename, $filepath) = @_;
-
-  my $mm = new File::MMagic->($cfg->{MagicFile});
-  my $type = checktype_filename($filepath);
-  my $ext = pop(@{split('.', $filename)});
-
-  return 0 unless defined $cfg->{MIMETypeAssociation}{$ext};
-  return 0 unless $cfg->{MIMETypeAssociation}{$ext} eq $type;
-  return 1;
 }
 
 1;

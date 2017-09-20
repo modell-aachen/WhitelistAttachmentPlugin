@@ -36,8 +36,6 @@ sub move {
 }
 
 sub _hookBeforeCopy {
-  return unless _useHandler($handlers{copy});
-
   $copyAttachment = \&Foswiki::Meta::copyAttachment;
   undef *Foswiki::Meta::copyAttachment;
   *Foswiki::Meta::copyAttachment =
@@ -46,8 +44,6 @@ sub _hookBeforeCopy {
 }
 
 sub _hookBeforeRename {
-  return unless _useHandler($handlers{move});
-
   $moveAttachment = \&Foswiki::Meta::moveAttachment;
   undef *Foswiki::Meta::moveAttachment;
   *Foswiki::Meta::moveAttachment =
@@ -73,14 +69,6 @@ sub _invokeHandler {
 
   $opts{new_name} = $to_attachment;
   return $func->($meta, $from_attachment, $to, %opts);
-}
-
-sub _useHandler {
-  my $handler = shift;
-
-  my $useHandler =
-    $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{ucfirst($handler)};
-  return defined $useHandler ? $useHandler : 1;
 }
 
 sub _validateWTA {
