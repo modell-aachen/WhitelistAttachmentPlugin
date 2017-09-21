@@ -20,6 +20,8 @@ This plugins allows to whitelist a given set of attachment types which are
 allowed to be uploaded.'
 DESC
 
+our @ALWAYS_ALLOWED_EXTENSIONS = ("xml", "svg");
+
 sub earlyInitPlugin {
     return unless $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{Enabled};
     return Foswiki::Plugins::WhitelistAttachmentPlugin::Meta::hook();
@@ -87,6 +89,8 @@ sub _isValidExtension {
   my @exts = map {
     $_ =~ s/[\s\r\n\.]//gr
   } split(/,/, ($allowedExtensions));
+
+  @exts = (@exts, @ALWAYS_ALLOWED_EXTENSIONS);
 
   my $pattern = '(' . join('|', @exts) . ')$';
   return ($filename =~ /$pattern/) || 0;
