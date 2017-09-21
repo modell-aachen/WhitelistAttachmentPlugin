@@ -8,11 +8,13 @@ use Foswiki::Func;
 use Foswiki::Meta;
 use Foswiki::Plugin;
 
+my $attach;
 my $copyAttachment;
 my $moveAttachment;
 my $hooked;
 
 my %handlers = (
+  attach => 'beforeAttachHandler',
   copy => 'beforeCopyAttachmentHandler',
   move => 'beforeRenameAttachmentHandler',
 );
@@ -20,6 +22,7 @@ my %handlers = (
 sub hook {
   return if defined $hooked;
 
+  _hookBeforeAttach();
   _hookBeforeCopy();
   _hookBeforeRename();
 
@@ -27,12 +30,24 @@ sub hook {
   return undef;
 }
 
+sub attach {
+  return _invokeAttachHandler('attach', \&$attach, @_);
+}
+
 sub copy {
-  return _invokeHandler('copy', \&$copyAttachment, @_);
+  return _invokeRenameCopyHandler('copy', \&$copyAttachment, @_);
 }
 
 sub move {
-  return _invokeHandler('move', \&$moveAttachment, @_);
+  return _invokeRenameCopyHandler('move', \&$moveAttachment, @_);
+}
+
+sub _hookBeforeAttach {
+  $attach = \&Foswiki::Meta::attach;
+  undef *Foswiki::Meta::attach;
+  *Foswiki::Meta::attach =
+      \&Foswiki::Plugins::WhitelistAttachmentPlugin::Meta::attach;
+  push @{Foswiki::Plugin::registrableHandlers}, $handlers{attach};
 }
 
 sub _hookBeforeCopy {
@@ -51,7 +66,7 @@ sub _hookBeforeRename {
   push @{Foswiki::Plugin::registrableHandlers}, $handlers{move};
 }
 
-sub _invokeHandler {
+sub _invokeRenameCopyHandler {
   my ($handler, $func, $meta, $from_attachment, $to, %opts) = @_;
 
   my ($from_web, $from_topic) = ($meta->{_web}, $meta->{_topic});
@@ -61,7 +76,7 @@ sub _invokeHandler {
   ($to_web, $to_topic, $to_attachment) =
     _validateWTA($to_web, $to_topic, $to_attachment);
 
-  $meta->{_session}->{plugins}->dispatch(
+  $Foswiki::Plugins::SESSION->{plugins}->dispatch(
     $handlers{$handler},
     $from_web, $from_topic, $from_attachment,
     $to_web, $to_topic, $to_attachment
@@ -69,6 +84,19 @@ sub _invokeHandler {
 
   $opts{new_name} = $to_attachment;
   return $func->($meta, $from_attachment, $to, %opts);
+}
+
+sub _invokeAttachHandler {
+  my ($handler, $func, $meta, %opts) = @_;
+
+  $Foswiki::Plugins::SESSION->{plugins}->dispatch(
+    $handlers{$handler},
+    $meta->web(),
+    $meta->topic(),
+    $opts{name}
+  );
+
+  return $func->($meta, %opts);
 }
 
 sub _validateWTA {

@@ -149,7 +149,7 @@ sub test_beforeRenameAttachmentHandlerShowsNoErrorPageOnValidExtension {
     return;
 }
 
-sub test_beforeUploadHandlerShowsErrorPageOnInvalidExtension {
+sub test_beforeAttachHandlerShowsErrorPageOnInvalidExtension {
     my ( $this ) = @_;
 
     $this->mock("Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension", sub {
@@ -161,15 +161,14 @@ sub test_beforeUploadHandlerShowsErrorPageOnInvalidExtension {
         $errorPageShown = 1;
         return;
     });
-    my $mockMeta = Foswiki::Meta->new($Foswiki::Plugins::SESSION, "Web", "Topic");
-    Foswiki::Plugins::WhitelistAttachmentPlugin::beforeUploadHandler({}, $mockMeta);
+    Foswiki::Plugins::WhitelistAttachmentPlugin::beforeAttachHandler();
 
 
     $this->assert($errorPageShown, "No error page has been shown although the extension is invalid");
     return;
 }
 
-sub test_beforeUploadHandlerShowsNoErrorPageOnValidExtension {
+sub test_beforeAttachHandlerShowsNoErrorPageOnValidExtension {
     my ( $this ) = @_;
 
     $this->mock("Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension", sub {
@@ -181,7 +180,7 @@ sub test_beforeUploadHandlerShowsNoErrorPageOnValidExtension {
         $errorPageShown = 1;
         return;
     });
-    Foswiki::Plugins::WhitelistAttachmentPlugin::beforeUploadHandler();
+    Foswiki::Plugins::WhitelistAttachmentPlugin::beforeAttachHandler();
 
 
     $this->assert(!$errorPageShown, "Error page has been shown although the extension is valid");

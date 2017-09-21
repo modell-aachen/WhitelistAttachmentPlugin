@@ -36,6 +36,14 @@ sub initPlugin {
   return 1;
 }
 
+sub beforeAttachHandler {
+  my ($web, $topic, $attachmentName) = @_;
+  if(!_isValidExtension($attachmentName)){
+    _showErrorPage($web, $topic, $attachmentName);
+  }
+  return;
+}
+
 sub beforeCopyAttachmentHandler {
   my ($web, $topic, $attachment, $toWeb, $toTopic, $toAttachment) = @_;
   if(!_isValidExtension($toAttachment)){
@@ -48,14 +56,6 @@ sub beforeRenameAttachmentHandler {
   my ($web, $topic, $attachment, $toWeb, $toTopic, $toAttachment) = @_;
   if(!_isValidExtension($toAttachment)){
     _showErrorPage($web, $topic, $toAttachment);
-  }
-  return;
-}
-
-sub beforeUploadHandler {
-  my ($params, $meta) = @_;
-  if(!_isValidExtension($params->{name})){
-    _showErrorPage($meta->web(), $meta->topic(), $params->{name});
   }
   return;
 }
