@@ -91,7 +91,7 @@ sub _isValidExtension {
   @exts = (@exts, @ALWAYS_ALLOWED_EXTENSIONS);
 
   my $pattern = '(' . join('|', @exts) . ')$';
-  return ($filename =~ /$pattern/) || 0;
+  return ($filename =~ /$pattern/i) || 0;
 }
 
 1;

@@ -78,7 +78,7 @@ sub test_isValidExtensionReturnsTrueForXml {
 
     $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{AllowedExtensions} = '';
 
-    $this->assert(Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension('Test.xml'), "Extension was accepted although no extensions are allowed.");
+    $this->assert(Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension('Test.xml'), "Xml extension was not accepted.");
     return;
 }
 
@@ -87,7 +87,25 @@ sub test_isValidExtensionReturnsTrueForSvg {
 
     $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{AllowedExtensions} = '';
 
-    $this->assert(Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension('Test.svg'), "Extension was accepted although no extensions are allowed.");
+    $this->assert(Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension('Test.svg'), "Svg extension was not accepted.");
+    return;
+}
+
+sub test_isValidExtensionReturnsFalseIfWhitelistedExtensionIsOnlyPartOfTheBaseName {
+    my ( $this ) = @_;
+
+    $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{AllowedExtensions} = 'txt';
+
+    $this->assert(!Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension('txt.png'), "Extension was accepted although it should not");
+    return;
+}
+
+sub test_isValidExtensionIsCaseInsensitive {
+    my ( $this ) = @_;
+
+    $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{AllowedExtensions} = 'txt';
+
+    $this->assert(Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension('text.TXT'), "Extension was not accepted although it should");
     return;
 }
 
