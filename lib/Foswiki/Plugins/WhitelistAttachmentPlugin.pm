@@ -83,9 +83,7 @@ sub _isValidExtension {
   my $filename = shift;
 
   my $allowedExtensions = $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{AllowedExtensions};
-  if(!$allowedExtensions) {
-    return 0;
-  }
+
   my @exts = map {
     $_ =~ s/[\s\r\n\.]//gr
   } split(/,/, ($allowedExtensions));

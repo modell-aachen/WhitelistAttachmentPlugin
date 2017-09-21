@@ -73,6 +73,24 @@ sub test_isValidExtensionReturnsFalseIfAllowedExtensionsConfigIsEmpty {
     return;
 }
 
+sub test_isValidExtensionReturnsTrueForXml {
+    my ( $this ) = @_;
+
+    $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{AllowedExtensions} = '';
+
+    $this->assert(Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension('Test.xml'), "Extension was accepted although no extensions are allowed.");
+    return;
+}
+
+sub test_isValidExtensionReturnsTrueForSvg {
+    my ( $this ) = @_;
+
+    $Foswiki::cfg{Plugins}{WhitelistAttachmentPlugin}{AllowedExtensions} = '';
+
+    $this->assert(Foswiki::Plugins::WhitelistAttachmentPlugin::_isValidExtension('Test.svg'), "Extension was accepted although no extensions are allowed.");
+    return;
+}
+
 sub test_beforeCopyAttachmentHandlerShowsErrorPageOnInvalidExtension {
     my ( $this ) = @_;
 
