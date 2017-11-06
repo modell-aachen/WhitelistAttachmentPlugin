@@ -1,0 +1,24 @@
+%META:TOPICPARENT{name="Plugins"}%
+---+ !WhitelistAttachmentPlugin
+
+%SHORTDESCRIPTION%
+
+%TOC%
+
+---++ Installation Instructions
+%$INSTALL_INSTRUCTIONS%
+---++ General Information
+This Plugin allows to define a whitelist of allowed attachment file extensions.
+The list can be defined in the plugin settings in bin/configure.
+If this plugin is enabled every operation on attachments (upload, rename, move) will be verified based on the defined whitelist.
+Some extensions will always be permitted in order to retain standard wiki functionality (e.g. xml and svg).
+If the file extension is not part of the whitelist then the operation will be aborted and an error message is provided. Filenames without extension are always invalid if this plugin is activated.
+
+|  Author(s): | Foswiki:Main.SvenMeyer |
+|  Copyright: | &copy; 2017, Modell Aachen !GmbH |
+|  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
+|  Release: | %$RELEASE% |
+|  Version: | %$VERSION% |
+|  Dependencies: | %$DEPENDENCIES% |
+|  Home page: | [[http://www.modell-aachen.de][Modell Aachen GmbH]] |
+|  Support: | [[http://www.modell-aachen.de][Modell Aachen GmbH]] |
