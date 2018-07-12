@@ -39,8 +39,8 @@ sub initPlugin {
 }
 
 sub beforeAttachHandler {
-  my ($web, $topic, $attachmentName) = @_;
-  if(!_isValidExtension($attachmentName)){
+  my ($web, $topic, $attachmentName, $opts) = @_;
+  if((!_isValidExtension($attachmentName)) || ($opts->{presented_name} && !_isValidExtension($opts->{presented_name}))){
     _showErrorPage($web, $topic, $attachmentName);
   }
   return;
@@ -63,19 +63,19 @@ sub beforeRenameAttachmentHandler {
 }
 
 sub _showErrorPage {
-  my ($web, $topic, $attachment) = @_;
+    my ($web, $topic, $attachment) = @_;
 
     my $session = $Foswiki::Plugins::SESSION;
     throw Foswiki::OopsException(
-      'generic',
-      web => $web,
-      topic => $topic,
-      keep => 1,
-      params => [
-        $session->i18n->maketext("Attachment operation not permitted"),
-        $session->i18n->maketext("The file extension violates the security settings"),
-        "'$attachment'"
-      ]
+        'wlaplugin',
+        web => $web,
+        topic => $topic,
+        keep => 1,
+        params => [
+            $session->i18n->maketext("Attachment operation not permitted"),
+            $session->i18n->maketext("The file extension violates the security settings"),
+            "'$attachment'"
+        ]
     );
 }
 

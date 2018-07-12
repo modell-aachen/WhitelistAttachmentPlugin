@@ -79,7 +79,8 @@ sub _invokeRenameCopyHandler {
   $Foswiki::Plugins::SESSION->{plugins}->dispatch(
     $handlers{$handler},
     $from_web, $from_topic, $from_attachment,
-    $to_web, $to_topic, $to_attachment
+    $to_web, $to_topic, $to_attachment,
+    \%opts
   );
 
   $opts{new_name} = $to_attachment;
@@ -93,7 +94,8 @@ sub _invokeAttachHandler {
     $handlers{$handler},
     $meta->web(),
     $meta->topic(),
-    $opts{name}
+    $opts{name},
+    \%opts
   );
 
   return $func->($meta, %opts);
