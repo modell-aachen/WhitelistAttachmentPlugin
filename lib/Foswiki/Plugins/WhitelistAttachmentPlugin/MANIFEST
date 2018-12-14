@@ -3,5 +3,6 @@ lib/Foswiki/Configure/Checkers/Plugins/WhitelistAttachmentPlugin/MagicFile.pm 06
 lib/Foswiki/Plugins/WhitelistAttachmentPlugin.pm 0644
 lib/Foswiki/Plugins/WhitelistAttachmentPlugin/Config.spec 0644
 lib/Foswiki/Plugins/WhitelistAttachmentPlugin/Meta.pm 0644
+templates/oopswlaplugin.tmpl 0644
 test/unit/WhitelistAttachmentPlugin/WhitelistAttachmentPluginTests.pm 0644
 locale/WhitelistAttachmentPlugin/de.po 0644
